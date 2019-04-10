@@ -1,9 +1,4 @@
 from .config import Config
-from .logging import SILENCE, VERBOSE, DEBUG, INFO
-from .errors import (
-    HasekError,
-    InvalidCredentialsError,
-    ConnectionLock
-)
-from .logging import log, setup_logging
+from .errors import ConnectionLock, HasekError, InvalidCredentialsError
+from .logging import DEBUG, INFO, SILENCE, VERBOSE, log, setup_logging
 from .secret import Secret

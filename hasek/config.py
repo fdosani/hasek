@@ -9,7 +9,7 @@ from .errors import *
 from .io import file_exists, file_permissions, home_file
 from .logging import colors, log
 
-__all__ = ['default_config', 'Config', 'message_write_default']
+__all__ = ["default_config", "Config", "message_write_default"]
 
 
 message_write_default = """Successfully created file '{0}'
@@ -22,14 +22,11 @@ Set the username and password using the config module:
 default_config = {
     "connections": {
         "default": "db1",
-        "db1": {
-            "host": None,
-            "username": None,
-            "password": None
-        }
+        "db1": {"host": None, "username": None, "password": None},
     },
-    "colorful": True
+    "colorful": True,
 }
+
 
 def _get_config_file(conf=None):
     if conf is None:
@@ -37,9 +34,14 @@ def _get_config_file(conf=None):
     else:
         conf = os.path.abspath(conf)
     if not file_exists(conf):
-        raise ConfigNotFound(("Config file '{}' does not exist and credentials were not "
-            "otherwise specified.").format(conf))
+        raise ConfigNotFound(
+            (
+                "Config file '{}' does not exist and credentials were not "
+                "otherwise specified."
+            ).format(conf)
+        )
     return conf
+
 
 def _get_key_file(key_file=None):
     if key_file is None:
@@ -50,16 +52,21 @@ def _get_key_file(key_file=None):
         raise KeyNotFound("Key file is required to use hasek config.")
     return key_file
 
+
 def _check_file_permissions(path, perms):
-    if sys.platform == 'win32':
+    if sys.platform == "win32":
         return True
     if file_permissions(path) != perms:
-        perms = oct(perms).replace('o', '')
+        perms = oct(perms).replace("o", "")
         command = colors.fail("chmod {} {}".format(perms, path))
-        raise ConfigurationError(("File '{}' not set with secure file-level "
-            "permissions. Try running chmod to correct this issue:\n\t{}").format(
-            path, command))
+        raise ConfigurationError(
+            (
+                "File '{}' not set with secure file-level "
+                "permissions. Try running chmod to correct this issue:\n\t{}"
+            ).format(path, command)
+        )
     return True
+
 
 def _read_config_dict(d, fn, path=[], level=0):
     keywords = ["pass", "password", "apikey", "key"]
@@ -130,7 +137,11 @@ class Config(object):
         :raises `hasek.errors.ConfigurationError`: if connections are not present
         """
         if "connections" not in self.settings:
-            raise ConfigurationError("Could not retrieve connections from config file '{}'.".format(self._config_file))
+            raise ConfigurationError(
+                "Could not retrieve connections from config file '{}'.".format(
+                    self._config_file
+                )
+            )
         return self.settings.get("connections")
 
     def decrypt(self, value, path=[]):
@@ -147,7 +158,9 @@ class Config(object):
             key = path[-1].lower()
             if key in ["pass", "password", "apikey", "key"] or path[0] in ["secure"]:
                 if not isinstance(value, basestring):
-                    raise ConfigurationError("Cannot encrypt a value of type '{}'.".format(type(value)))
+                    raise ConfigurationError(
+                        "Cannot encrypt a value of type '{}'.".format(type(value))
+                    )
                 value = "ENCRYPTED:{}".format(ensure_str(self.cipher.encrypt(value)))
         return value
 
@@ -170,9 +183,9 @@ class Config(object):
         if connection is None:
             raise ConfigurationError("DSN '{}' does not exist".format(dsn))
         connection = self.decrypt(connection.copy())
-        if connection.get('lock', 0) > 1:
+        if connection.get("lock", 0) > 1:
             raise ConnectionLock(dsn)
-        connection['name'] = dsn
+        connection["name"] = dsn
         return connection
 
     def get_value(self, key, default={}, nested=True, decrypt=True):
@@ -274,11 +287,15 @@ class Config(object):
                 curr[p] = {}
             curr = curr[p]
         if not isinstance(curr, dict):
-            raise ConfigurationError("Cannot set nested key '{}' in configuration value '{}' (destination is not a dictionary).".format(path[-1], key))
+            raise ConfigurationError(
+                "Cannot set nested key '{}' in configuration value '{}' (destination is not a dictionary).".format(
+                    path[-1], key
+                )
+            )
         value = self.encrypt(value, path)
-        if value in {'true', 'True'}:
+        if value in {"true", "True"}:
             value = True
-        if value in {'false', 'False'}:
+        if value in {"false", "False"}:
             value = False
         curr[path[-1]] = value
 
@@ -320,12 +337,22 @@ class Config(object):
         curr = self.settings
         for p in path[:-1]:
             if p not in curr:
-                raise ConfigurationError("Cannot unset '{}', nested key '{}' does not exist.".format(key, p))
+                raise ConfigurationError(
+                    "Cannot unset '{}', nested key '{}' does not exist.".format(key, p)
+                )
             curr = curr[p]
         if not isinstance(curr, dict):
-            raise ConfigurationError("Cannot unset nested key '{}' in configuration value '{}'.".format(path[-1], key))
+            raise ConfigurationError(
+                "Cannot unset nested key '{}' in configuration value '{}'.".format(
+                    path[-1], key
+                )
+            )
         if path[-1] not in curr:
-            raise ConfigurationError("Cannot unset '{}', nested key '{}' does not exist.".format(key, path[-1]))
+            raise ConfigurationError(
+                "Cannot unset '{}', nested key '{}' does not exist.".format(
+                    key, path[-1]
+                )
+            )
         del curr[path[-1]]
 
     def write(self, settings=None):

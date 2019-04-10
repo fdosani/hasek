@@ -1,11 +1,9 @@
-import sys
 import argparse
-
-from .logging import log
-from .utils import get_version_info, import_string
+import sys
 
 from ._compat import *
-
+from .logging import log
+from .utils import get_version_info, import_string
 
 __all__ = ["Argument", "Command"]
 
@@ -70,8 +68,14 @@ class Command(ArgumentParser):
     default = "run"
 
     def __init__(self, *args, **kwargs):
-        super(Command, self).__init__(self.name, description=self.description, usage=self.usage,
-            formatter_class=HelpFormatter, add_help=False, conflict_handler='resolve')
+        super(Command, self).__init__(
+            self.name,
+            description=self.description,
+            usage=self.usage,
+            formatter_class=HelpFormatter,
+            add_help=False,
+            conflict_handler="resolve",
+        )
         self.has_subcommands = False
         self.register_args(self.arguments)
 
@@ -89,13 +93,21 @@ class Command(ArgumentParser):
 
     def add_command(self, parent):
         if self.has_subcommands is False:
-            self.sub_parser = self.add_subparsers(title="commands", dest="module_name",
-                metavar=None)
+            self.sub_parser = self.add_subparsers(
+                title="commands", dest="module_name", metavar=None
+            )
             self.sub_parser._parser_class = ArgumentParser
             self.has_subcommands = True
-        new_parser = self.sub_parser.add_parser(parent.prog, usage=parent.usage, help=parent.help,
-            description=parent.description, parents=[parent], formatter_class=HelpFormatter,
-            add_help=False, conflict_handler='resolve')
+        new_parser = self.sub_parser.add_parser(
+            parent.prog,
+            usage=parent.usage,
+            help=parent.help,
+            description=parent.description,
+            parents=[parent],
+            formatter_class=HelpFormatter,
+            add_help=False,
+            conflict_handler="resolve",
+        )
 
     def register_args(self, arguments):
         for argument in arguments:
@@ -104,26 +116,25 @@ class Command(ArgumentParser):
             else:
                 parser = self
             if argument.default:
-                argument.help = "{} [default: '{}']".format(argument.help, argument.default)
+                argument.help = "{} [default: '{}']".format(
+                    argument.help, argument.default
+                )
             kwargs = {
-                'help': argument.help,
-                'default': argument.default,
-                'action': argument.action
+                "help": argument.help,
+                "default": argument.default,
+                "action": argument.action,
             }
 
             if argument.action == "store":
-                kwargs['nargs'] = argument.nargs
+                kwargs["nargs"] = argument.nargs
                 if argument.type:
-                    kwargs['type'] = argument.type
-                    kwargs['const'] = argument.const
+                    kwargs["type"] = argument.type
+                    kwargs["const"] = argument.const
             elif argument.action == "version":
-                kwargs['version'] = " version ".join(get_version_info())
+                kwargs["version"] = " version ".join(get_version_info())
             if argument.dest:
-                kwargs['dest'] = argument.dest
-            parser.add_argument(
-                *argument.args,
-                **kwargs
-            )
+                kwargs["dest"] = argument.dest
+            parser.add_argument(*argument.args, **kwargs)
 
     def register_commands(self):
         for command in self.commands:
@@ -149,7 +160,7 @@ class HelpFormatter(argparse.RawDescriptionHelpFormatter):
 
         # pop off subparser header line
         if isinstance(action, argparse._SubParsersAction):
-            parts = "\n".join(parts.split('\n')[1:])
+            parts = "\n".join(parts.split("\n")[1:])
         return parts
 
     def _format_args(self, action, default_metavar):

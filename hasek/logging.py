@@ -1,39 +1,41 @@
-import sys
 import logging
 import multiprocessing
-
-from .errors import *
+import sys
 
 from ._compat import *
+from .errors import *
 
-
-__all__ = ['colors', 'log', 'setup_logging']
+__all__ = ["colors", "log", "setup_logging"]
 
 SILENCE = -1
-INFO    = 0
+INFO = 0
 VERBOSE = 1
-DEBUG   = 2
+DEBUG = 2
 
 logging_level_map = {
     SILENCE: logging.NOTSET,
     INFO: logging.INFO,
     VERBOSE: logging.DEBUG,
-    DEBUG: logging.DEBUG
+    DEBUG: logging.DEBUG,
 }
+
 
 def run_once(f):
     def wrapper(*args, **kwargs):
         if not wrapper.has_run:
             wrapper.has_run = True
             return f(*args, **kwargs)
+
     wrapper.has_run = False
     return wrapper
+
 
 @run_once
 def setup_logging():
     l = logging.getLogger("hasek.console_logger")
     l.addHandler(logging.StreamHandler(sys.stderr))
     l.setLevel(logging.DEBUG)
+
 
 logging_logger = logging.getLogger("hasek.console_logger")
 

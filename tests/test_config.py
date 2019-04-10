@@ -8,9 +8,8 @@ import hasek
 from hasek.errors import *
 
 
-@pytest.mark.usefixtures('config', 'tmpfiles')
 class TestConfig(object):
-    def test_get_set_list_value(self, tmpfiles):
+    def test_get_set_list_value(self, config, tmpfiles):
         with hasek.Config(tmpfiles.conf, "w", tmpfiles.key) as config:
             value = config.get_value("test")
             assert value == {}
@@ -62,7 +61,7 @@ class TestConfig(object):
         # Tests for permissions on linux or unix-like system only. Windows
         # requires the use of Windows-only APIs to determine and set the
         # permissions on files.
-        if platform.system() == 'Windows':
+        if platform.system() == "Windows":
             return
         with pytest.raises(ConfigurationError):
             os.chmod(tmpfiles.conf, 0o655)
@@ -75,7 +74,7 @@ class TestConfig(object):
         # Tests for permissions on linux or unix-like system only. Windows
         # requires the use of Windows-only APIs to determine and set the
         # permissions on files.
-        if platform.system() == 'Windows':
+        if platform.system() == "Windows":
             return
         with pytest.raises(ConfigurationError):
             os.chmod(tmpfiles.key, 0o655)
@@ -112,7 +111,9 @@ class TestConfig(object):
             config.set_value("connections.db1.password", expected_password)
             config.write()
         with hasek.Secret(tmpfiles.conf, "r", tmpfiles.key) as secret:
-            username, password = secret("connections.db1.username, connections.db1.password")
+            username, password = secret(
+                "connections.db1.username, connections.db1.password"
+            )
             assert expected_username == username
             assert expected_password == password
         with hasek.Secret(tmpfiles.conf, "w", tmpfiles.key) as secret:

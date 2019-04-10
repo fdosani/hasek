@@ -3,28 +3,21 @@ import pytest
 
 @pytest.fixture
 def config(mocker):
-    mock_config = mocker.patch('hasek.config.Config')
+    mock_config = mocker.patch("hasek.config.Config")
     mock_config().__enter__().get_connection.return_value = {
-        'host': 'db1',
-        'username': 'user123',
-        'password': 'pass456'
+        "host": "db1",
+        "username": "user123",
+        "password": "pass456",
     }
     return mock_config
 
-@pytest.fixture(scope='class')
-def context(request):
-    from hasek.connection import Context
-    Context._testing = True
 
-    def fin():
-        Context._testing = False
-    request.addfinalizer(fin)
-
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def tmpfiles(tmpdir_factory):
     import hasek
     from collections import namedtuple
-    tmpdir = tmpdir_factory.mktemp('data')
+
+    tmpdir = tmpdir_factory.mktemp("data")
     conf = tmpdir.join(".hasekrc")
     key = tmpdir.join(".hasekpg")
     noconf = tmpdir.join("noconf.txt")
@@ -33,4 +26,10 @@ def tmpfiles(tmpdir_factory):
     result = hasek.Config.write_default(conf.strpath)
     hasek.encrypt.create_key_file(key.strpath)
     files = namedtuple("files", "conf key load_file noconf output_file")
-    return files(conf.strpath, key.strpath, load_file.strpath, noconf.strpath, output_file.strpath)
+    return files(
+        conf.strpath,
+        key.strpath,
+        load_file.strpath,
+        noconf.strpath,
+        output_file.strpath,
+    )

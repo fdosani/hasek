@@ -1,5 +1,6 @@
 import os
 
+
 def file_exists(path):
     try:
         with open(path):

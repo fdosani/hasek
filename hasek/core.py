@@ -1,9 +1,8 @@
 import sys
 
-from .errors import *
-
 from .config import Config, message_write_default
 from .encrypt import create_key_file
+from .errors import *
 from .io import home_file
 from .logging import colors, log
 from .parser import Argument, Command
@@ -25,14 +24,17 @@ class MainCommand(Command):
 
     arguments = [
         Argument("-V", "--version", action="version", help="Print version"),
-        Argument("--protect", default=False, help=("Use connection locking to protect Teradata "
-            "accounts from locking from bad attempts")),
+        Argument(
+            "--protect",
+            default=False,
+            help=(
+                "Use connection locking to protect Teradata "
+                "accounts from locking from bad attempts"
+            ),
+        ),
     ]
 
-    commands = [
-        "commandline.ConfigCommand",
-        "commandline.SecretCommand",
-    ]
+    commands = ["commandline.ConfigCommand", "commandline.SecretCommand"]
 
     default = False
 
@@ -56,8 +58,13 @@ class MainCommand(Command):
             log.debug(error)
             if args.conf is None:
                 args.conf = home_file(".hasekrc")
-            if prompt_bool(("Configuration file '{}' not found, would you like to create one now "
-                    "using the default template?").format(args.conf), default=True):
+            if prompt_bool(
+                (
+                    "Configuration file '{}' not found, would you like to create one now "
+                    "using the default template?"
+                ).format(args.conf),
+                default=True,
+            ):
                 result = Config.write_default(args.conf)
                 if result:
                     log.write(colors.green(result))
@@ -69,8 +76,12 @@ class MainCommand(Command):
             log.debug(error)
             if args.key is None:
                 args.key = home_file(".hasekpg")
-            if prompt_bool("Key file '{}' not found, would you like to create one now?".format(args.key),
-                    default=True):
+            if prompt_bool(
+                "Key file '{}' not found, would you like to create one now?".format(
+                    args.key
+                ),
+                default=True,
+            ):
                 create_key_file(args.key)
                 log.write("Key file '{}' created successfully.".format(args.key))
                 self.run()

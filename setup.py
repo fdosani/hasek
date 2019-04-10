@@ -1,4 +1,5 @@
 import os
+
 from setuptools import setup
 
 CURR_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -22,10 +23,6 @@ setup(
     license="MIT",
     packages=["hasek"],
     install_requires=INSTALL_REQUIRES,
-    entry_points={
-        'console_scripts': [
-            'hasek = hasek.__main__:main'
-        ]
-    },
+    entry_points={"console_scripts": ["hasek = hasek.__main__:main"]},
     zip_safe=False,
 )

@@ -1,24 +1,35 @@
+import functools
+import getpass
 import sys
 import time
-import getpass
-import functools
 import warnings
-
 
 from .logging import log
 
-
-__all__ = ['disable_warnings', 'get_version_info', 'import_string', 'pipeline', 'prompt',
-    'prompt_bool', 'readable_time', 'register_graceful_shutdown_signal', 'show_warning',
-    'suppress_context', 'timer']
+__all__ = [
+    "disable_warnings",
+    "get_version_info",
+    "import_string",
+    "pipeline",
+    "prompt",
+    "prompt_bool",
+    "readable_time",
+    "register_graceful_shutdown_signal",
+    "show_warning",
+    "suppress_context",
+    "timer",
+]
 
 
 def disable_warnings(category=UserWarning):
-    warnings.simplefilter('ignore', category)
+    warnings.simplefilter("ignore", category)
+
 
 def get_version_info():
     from hasek._version import __version__
+
     return __version__
+
 
 def import_string(import_name):
     import_name = str(import_name)
@@ -28,7 +39,7 @@ def import_string(import_name):
         return __import__(import_name)
     except ImportError:
         try:
-            module_name, obj_name = import_name.rsplit('.', 1)
+            module_name, obj_name = import_name.rsplit(".", 1)
         except AttributeError as error:
             raise ImportError(error)
         try:
@@ -40,10 +51,13 @@ def import_string(import_name):
         except AttributeError as error:
             raise ImportError(error)
 
+
 def pipeline(funcs):
     def _pipeline(x):
         return reduce(lambda a, f: f(a), funcs, x)
+
     return _pipeline
+
 
 def prompt(message, default=None, password=False):
     while True:
@@ -55,6 +69,7 @@ def prompt(message, default=None, password=False):
             return user_input
         if default is not None:
             return default
+
 
 def prompt_bool(message, default=False):
     yes_choices = ("y", "yes")
@@ -75,18 +90,22 @@ def prompt_bool(message, default=False):
         else:
             return default
 
+
 def readable_time(t):
     if t > 300:
-        return "{}m".format(t//60)
+        return "{}m".format(t // 60)
     else:
         return "{:.3f}s".format(t)
+
 
 def register_shutdown_signal():
     """
     Registers a simple shutdown handler using C signals.
     """
     from ._teradata import register_shutdown_signal as _register
+
     _register()
+
 
 def register_graceful_shutdown_signal():
     """
@@ -96,13 +115,17 @@ def register_graceful_shutdown_signal():
     have been closed or not.
     """
     from ._teradata import register_graceful_shutdown_signal as _register
+
     _register()
+
 
 def show_warning(message, category):
     def send_warnings_to_log(message, category, filename, lineno, file=None, line=None):
         log.write("{}:{}: {}: {}".format(filename, lineno, category.__name__, message))
+
     warnings.showwarning = send_warnings_to_log
     warnings.warn(message, category)
+
 
 def suppress_context(exc):
     """
@@ -114,6 +137,7 @@ def suppress_context(exc):
     exc.__cause__ = None
     return exc
 
+
 def timer(f):
     @functools.wraps(f)
     def wrapper(*args, **kwds):
@@ -122,4 +146,5 @@ def timer(f):
         elapsed = time.time() - start
         sys.stderr.write("{} took {:.4f}s to finish\n".format(f.__name__, elapsed))
         return result
+
     return wrapper

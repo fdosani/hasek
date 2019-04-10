@@ -9,9 +9,7 @@ from .logging import colors, log, setup_logging
 from .parser import Argument, Command
 from .utils import prompt_bool
 
-
 setup_logging()
-
 
 
 class ConfigCommand(Command):
