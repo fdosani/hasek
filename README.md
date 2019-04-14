@@ -5,18 +5,17 @@ Important note:
   So 100% of the credit should go to the team there!
 
 Hasek allows for easy password and secret management from either the command
-line or via Python code.
+line or via Python code directly.
 
 
 ## Quick Installation
 
-A virtual environment is highly recommended!
+- A virtual environment is highly recommended!
+- and Python 3.6+
 
 ```bash
 pip install git+https://github.com/fdosani/hasek.git
 ```
-> Will be switching PyPi soon
-
 
 ## Example
 
