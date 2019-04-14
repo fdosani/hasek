@@ -2,3 +2,4 @@ isort==4.3.17
 black==19.3b0
 pytest==4.4.0
 pytest-mock==1.10.3
+pytest-cov==2.6.1
